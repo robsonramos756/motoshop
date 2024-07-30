@@ -94,7 +94,7 @@ class _FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Modelos de motos disponíveis'),
+        title: Text('Modelos disponíveis'),
         leading: SizedBox.shrink(),
         actions: [
           if (widget.loggedIn)
