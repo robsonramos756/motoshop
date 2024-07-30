@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "610361540028",
+    "project_id": "motoshop-3be5d",
+    "storage_bucket": "motoshop-3be5d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:610361540028:android:8e204f1bf394dfce0ebfb9",
+        "android_client_info": {
+          "package_name": "com.example.motoshop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "610361540028-r2cca1j6evpv84ld1eq5hcl8bpi5vcac.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.motoshop",
+            "certificate_hash": "588224c3955a4c0379b7571d3729031fc32b9198"
+          }
+        },
+        {
+          "client_id": "610361540028-cmqf6keqg0sj2g8vva341q8gtjh0iugq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAus2r1uR3RgR_OIs8_bq4V3WTMbkqslfo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "610361540028-cmqf6keqg0sj2g8vva341q8gtjh0iugq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "610361540028-9i6hog4r54ctksui2lttg9016np7164o.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.motoshop"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
