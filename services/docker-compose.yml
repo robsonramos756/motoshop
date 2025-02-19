@@ -1,0 +1,44 @@
+version: '3.0'
+
+services:
+  db:
+    image: mysql:latest
+    container_name: motos_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: motoshop
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./api/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  api:
+    build: ./api
+    container_name: motos_api
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: "mysql+mysqlconnector://admin:admin@db/motoshop"
+    volumes:
+      - ./images:/app/images  
+
+  nginx:
+    build: ./api/nginx  
+    container_name: motos_nginx
+    restart: always
+    depends_on:
+      - api  
+    ports:
+      - "8080:80"
+    volumes:
+      - ./images:/usr/share/nginx/html/images 
+
+volumes:
+  mysql_data:

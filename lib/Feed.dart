@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:http/http.dart' as http;
 import 'DetalhesMotoPage.dart';
 import 'google_sign_in.dart';
 
@@ -17,25 +17,17 @@ class FeedPage extends StatefulWidget {
 class _FeedPageState extends State<FeedPage> {
   final ScrollController _scrollController = ScrollController();
   List<dynamic> motos = [];
-  int page = 0;
+  int currentIndex = 0;
   bool isLoading = false;
   bool allLoaded = false;
   bool showToTopButton = false;
+  static const int itemsPerLoad = 3;
 
   @override
   void initState() {
     super.initState();
-    _loadMoreMotos();
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent &&
-          !isLoading && !allLoaded) {
-        _loadMoreMotos();
-      }
-
-      setState(() {
-        showToTopButton = _scrollController.offset >= 200;
-      });
-    });
+    _fetchMotos();
+    _scrollController.addListener(_scrollListener);
   }
 
   @override
@@ -44,37 +36,56 @@ class _FeedPageState extends State<FeedPage> {
     super.dispose();
   }
 
-  Future<void> _loadMoreMotos() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      String jsonString = await rootBundle.loadString('assets/json/motos.json');
-      List<dynamic> allMotos = json.decode(jsonString);
-
-      await Future.delayed(Duration(seconds: 2));
-      setState(() {
-        int itemsToLoad = 3;
-        int startIndex = page * itemsToLoad;
-        int endIndex = startIndex + itemsToLoad;
-        if (startIndex < allMotos.length) {
-          if (endIndex > allMotos.length) {
-            endIndex = allMotos.length;
-            allLoaded = true;
-          }
-          motos.addAll(allMotos.sublist(startIndex, endIndex));
-          page++;
-        } else {
-          allLoaded = true;
-        }
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+  void _scrollListener() {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent &&
+        !isLoading && !allLoaded) {
+      _loadMore();
     }
+
+    setState(() {
+      showToTopButton = _scrollController.offset >= 300;
+    });
+  }
+
+  Future<void> _fetchMotos() async {
+    setState(() => isLoading = true);
+
+    final response = await http.get(Uri.parse('http://192.168.1.145:8000/motos'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> fetchedMotos = json.decode(response.body);
+      setState(() {
+        motos = fetchedMotos;
+        currentIndex = (motos.length >= itemsPerLoad) ? itemsPerLoad : motos.length;
+        allLoaded = motos.length <= itemsPerLoad;
+        isLoading = false;
+      });
+    } else {
+      setState(() => isLoading = false);
+    }
+  }
+
+  void _loadMore() async {
+    if (currentIndex >= motos.length) {
+      setState(() => allLoaded = true);
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    await Future.delayed(Duration(seconds: 1)); 
+
+    setState(() {
+      int nextIndex = currentIndex + itemsPerLoad;
+      currentIndex = (nextIndex > motos.length) ? motos.length : nextIndex;
+      allLoaded = currentIndex >= motos.length;
+      isLoading = false;
+    });
+  }
+
+  void _logout() async {
+    await GoogleSignInService().signOut();
+    Navigator.pushReplacementNamed(context, '/login');
   }
 
   void _scrollToTop() {
@@ -83,11 +94,6 @@ class _FeedPageState extends State<FeedPage> {
       duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
-  }
-
-  void _logout() async {
-    await GoogleSignInService().signOut();
-    Navigator.pushReplacementNamed(context, '/login');
   }
 
   @override
@@ -106,79 +112,30 @@ class _FeedPageState extends State<FeedPage> {
         ],
       ),
       body: Stack(
-        children: <Widget>[
+        children: [
           ListView.builder(
             controller: _scrollController,
-            itemCount: motos.length + (isLoading ? 1 : 0),
+            itemCount: currentIndex + (isLoading ? 1 : 0),
             itemBuilder: (context, index) {
-              if (index == motos.length) {
+              if (index == currentIndex) {
                 return _buildProgressIndicator();
               } else {
-                String imagePath = 'assets/imagens/';
-                switch (index % 14) {
-                  case 0:
-                    imagePath += 'BMWF750.jpeg';
-                    break;
-                  case 1:
-                    imagePath += 'BMWF850GS.jpeg';
-                    break;
-                  case 2:
-                    imagePath += 'BWMS1000.jpeg';
-                    break;
-                  case 3:
-                    imagePath += 'HondaCB1000R.jpeg';
-                    break;
-                  case 4:
-                    imagePath += 'HondaCBR1000RRR.jpeg';
-                    break;
-                  case 5:
-                    imagePath += 'KawasakiVersys1000.jpeg';
-                    break;
-                  case 6:
-                    imagePath += 'Kawasakiz900.jpeg';
-                    break;
-                  case 7:
-                    imagePath += 'KawasakiZ1000.jpeg';
-                    break;
-                  case 8:
-                    imagePath += 'SuzukiGXSS1000.jpeg';
-                    break;
-                  case 9:
-                    imagePath += 'SuzukiVStrom1050.jpeg';
-                    break;
-                  case 10:
-                    imagePath += 'Tracer900.jpeg';
-                    break;
-                  case 11:
-                    imagePath += 'Triumph900.jpeg';
-                    break;
-                  case 12:
-                    imagePath += 'TriumphStreet.jpeg';
-                    break;
-                  case 13:
-                    imagePath += 'YamahaMT09.jpeg';
-                    break;
-                  default:
-                    imagePath += 'placeholder.jpeg';
-                    break;
-                }
+                final moto = motos[index];
 
                 return GestureDetector(
-                  onTap: () async {
-                    String jsonString = await rootBundle.loadString('assets/json/motos.json');
-                    List<dynamic> motosJson = json.decode(jsonString);
-
+                  onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DetalhesMotoPage(moto: motosJson[index], loggedIn: widget.loggedIn),
+                        builder: (context) =>
+                            DetalhesMotoPage(moto: moto, loggedIn: widget.loggedIn),
                       ),
                     );
                   },
                   child: Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Image.asset(
-                      imagePath,
+                    child: Image.network(
+                      moto['imagem'],
                       height: 300,
                       width: double.infinity,
                       fit: BoxFit.cover,
@@ -204,11 +161,8 @@ class _FeedPageState extends State<FeedPage> {
   }
 
   Widget _buildProgressIndicator() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: CircularProgressIndicator(),
-      ),
-    );
+    return allLoaded
+        ? SizedBox.shrink() 
+        : Center(child: CircularProgressIndicator());
   }
 }

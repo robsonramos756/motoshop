@@ -16,27 +16,27 @@ dependencies:
   google_sign_in: ^6.2.1
   line_icons: ^2.0.3
   shared_preferences: ^2.0.8
-
+  http: ^1.2.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
 
-flutter:
+#flutter:
 
-  assets:
-    - assets/json/motos.json
-    - assets/imagens/BMWF750.jpeg
-    - assets/imagens/BMWF850GS.jpeg
-    - assets/imagens/BWMS1000.jpeg
-    - assets/imagens/HondaCB1000R.jpeg
-    - assets/imagens/HondaCBR1000RRR.jpeg
-    - assets/imagens/KawasakiVersys1000.jpeg
-    - assets/imagens/Kawasakiz900.jpeg
-    - assets/imagens/KawasakiZ1000.jpeg
-    - assets/imagens/SuzukiGXSS1000.jpeg
-    - assets/imagens/SuzukiVStrom1050.jpeg
-    - assets/imagens/Tracer900.jpeg
-    - assets/imagens/Triumph900.jpeg
-    - assets/imagens/TriumphStreet.jpeg
-    - assets/imagens/YamahaMT09.jpeg
+  #assets:
+    #- assets/json/motos.json
+    #- assets/imagens/BMWF750.jpeg
+    #- assets/imagens/BMWF850GS.jpeg
+    #- assets/imagens/BWMS1000.jpeg
+    #- assets/imagens/HondaCB1000R.jpeg
+    #- assets/imagens/HondaCBR1000RRR.jpeg
+    #- assets/imagens/KawasakiVersys1000.jpeg
+    #- assets/imagens/Kawasakiz900.jpeg
+    #- assets/imagens/KawasakiZ1000.jpeg
+    #- assets/imagens/SuzukiGXSS1000.jpeg
+    #- assets/imagens/SuzukiVStrom1050.jpeg
+    #- assets/imagens/Tracer900.jpeg
+    #- assets/imagens/Triumph900.jpeg
+    #- assets/imagens/TriumphStreet.jpeg
+    #- assets/imagens/YamahaMT09.jpeg

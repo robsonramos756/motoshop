@@ -1,0 +1,4 @@
+sudo ufw allow 8000
+sudo ufw allow 8080
+sudo ufw reload
+sudo ufw status
